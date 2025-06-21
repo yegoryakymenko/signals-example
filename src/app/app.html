@@ -1,7 +1,7 @@
 <div>
   <label>
     Page size:
-    <select (change)="onPageSizeChange(+($any($event.target).value))">
+    <select [value]="pageSize()" (change)="pageSize.set(+($any($event.target).value)); page.set(1)">
       @for (s of [10,20,50]; track s) {
         <option [value]="s">{{ s }}</option>
       }
@@ -9,35 +9,33 @@
   </label>
 
   <label>
-    @if (pageNumbers.length > 0) {
+    @if (pages().length > 0) {
       Page:
-      <select (change)="onPageChange(+($any($event.target).value))">
-        @for (p of pageNumbers; track p) {
+      <select [value]="page()" (change)="page.set(+($any($event.target).value))">
+        @for (p of pages(); track p) {
           <option [value]="p">{{ p }}</option>
         } @empty {
-          <option disabled>No pages</option>
+          <option disabled>No pages available</option>
         }
     </select>
     } @else {
-    <span>No pages available</span>
+    <span>No pages</span>
   }
   </label>
 </div>
 
-<p>{{ range$ | async }}</p>
+<p>{{ range() }}</p>
 
 <ul>
-  @if (items$ | async; as items ) {
-    @if (items.length > 0) {
-      @for (item of items; track item.id) {
-        <li>{{ item.name }}</li>
-      } @empty {
-        <li>No items available</li>
-      }
-    } @else {
+  @if (data.isLoading()) {
+    <li>Loading items…</li>
+  } @else if (items().length > 0) {
+    @for (item of items(); track item.id) {
+      <li>{{ item.name }}</li>
+    } @empty {
       <li>No items available</li>
     }
   } @else {
-    <li>Loading items…</li>
+    <li>No items available</li>
   }
 </ul>
